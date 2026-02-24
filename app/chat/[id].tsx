@@ -153,14 +153,64 @@ export default function ChatScreen() {
 
     ws.onmessage = (event) => {
       const data = event.data;
-      console.log('[WS] Received chunk:', data?.substring(0, 50));
+      console.log('[WS] Received raw data:', data?.substring(0, 100));
       
-      // Append chunk to the streaming message
-      setMessages(prev => prev.map(msg => 
-        msg.id === streamingId 
-          ? { ...msg, content: msg.content + data }
-          : msg
-      ));
+      try {
+        // Try to parse as JSON first (for control messages)
+        const parsed = JSON.parse(data);
+        console.log('[WS] Parsed message type:', parsed.type);
+        
+        // Handle different message types
+        if (parsed.type === 'authenticated') {
+          console.log('[WS] Authentication confirmed');
+          return;
+        }
+        
+        if (parsed.type === 'stream_start') {
+          console.log('[WS] Stream started for conversation:', parsed.conversationId);
+          return;
+        }
+        
+        if (parsed.type === 'stream_chunk' && parsed.content) {
+          // This is an actual content chunk
+          const contentChunk = parsed.content;
+          console.log('[WS] Content chunk:', contentChunk.substring(0, 50));
+          
+          setMessages(prev => prev.map(msg => 
+            msg.id === streamingId 
+              ? { ...msg, content: msg.content + contentChunk }
+              : msg
+          ));
+          return;
+        }
+        
+        if (parsed.type === 'stream_end') {
+          console.log('[WS] Stream ended');
+          return;
+        }
+        
+        if (parsed.type === 'error') {
+          console.error('[WS] Error from server:', parsed.message);
+          setMessages(prev => prev.map(msg =>
+            msg.id === streamingId
+              ? { ...msg, content: msg.content || 'Sorry, I encountered an error. Please try again.' }
+              : msg
+          ));
+          return;
+        }
+        
+        // If we get here, it's an unknown JSON message type
+        console.log('[WS] Unknown message type:', parsed.type);
+        
+      } catch (e) {
+        // Not JSON, treat as raw text chunk (fallback for plain text streaming)
+        console.log('[WS] Plain text chunk:', data.substring(0, 50));
+        setMessages(prev => prev.map(msg => 
+          msg.id === streamingId 
+            ? { ...msg, content: msg.content + data }
+            : msg
+        ));
+      }
     };
 
     ws.onerror = (error) => {
