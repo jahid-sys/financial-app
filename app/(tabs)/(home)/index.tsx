@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { 
   StyleSheet, 
@@ -12,6 +13,7 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from 'expo-linear-gradient';
 import { IconSymbol } from "@/components/IconSymbol";
 import { colors } from "@/styles/commonStyles";
 import { useAuth } from "@/contexts/AuthContext";
@@ -169,7 +171,7 @@ export default function HomeScreen() {
 
   const getTypeColor = (type: string) => {
     const typeColorMap: { [key: string]: string } = {
-      income: colors.primary,
+      income: colors.success,
       saving: colors.secondary,
       investment: colors.accent,
     };
@@ -192,7 +194,7 @@ export default function HomeScreen() {
 
   if (authLoading || loading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -204,12 +206,12 @@ export default function HomeScreen() {
   const totalBalance = totalIncome - totalSavings - totalInvestments;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welcome back</Text>
-          <Text style={[styles.userName, { color: theme.colors.text }]}>
+          <Text style={[styles.greeting, { color: colors.textSecondary }]}>Hi! How are you?</Text>
+          <Text style={[styles.userName, { color: colors.text }]}>
             {user?.name || 'User'}
           </Text>
         </View>
@@ -223,36 +225,130 @@ export default function HomeScreen() {
           <IconSymbol 
             android_material_icon_name="chat" 
             size={24} 
-            color={colors.primary} 
+            color="#FFFFFF" 
           />
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Balance Card */}
-        <View style={[styles.balanceCard, { backgroundColor: colors.primary }]}>
-          <Text style={styles.balanceLabel}>Total Balance</Text>
-          <Text style={styles.balanceAmount}>${totalBalance.toFixed(2)}</Text>
+        {/* Balance Card with Gradient */}
+        <LinearGradient
+          colors={[colors.gradientStart, colors.gradientEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.balanceCard}
+        >
+          <View style={styles.balanceHeader}>
+            <Text style={styles.balanceLabel}>Money Limit</Text>
+            <TouchableOpacity style={styles.downloadButton}>
+              <IconSymbol 
+                android_material_icon_name="download" 
+                size={20} 
+                color="#FFFFFF" 
+              />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.balanceAmount}>${totalBalance.toFixed(0)}</Text>
           <View style={styles.balanceRow}>
             <View style={styles.balanceItem}>
-              <Text style={styles.balanceItemLabel}>Income</Text>
-              <Text style={styles.balanceItemValue}>${totalIncome.toFixed(2)}</Text>
+              <Text style={styles.balanceItemLabel}>Net Worth</Text>
             </View>
             <View style={styles.balanceItem}>
-              <Text style={styles.balanceItemLabel}>Savings</Text>
-              <Text style={styles.balanceItemValue}>${totalSavings.toFixed(2)}</Text>
+              <Text style={styles.balanceItemLabel}>Spending</Text>
             </View>
-            <View style={styles.balanceItem}>
-              <Text style={styles.balanceItemLabel}>Investments</Text>
-              <Text style={styles.balanceItemValue}>${totalInvestments.toFixed(2)}</Text>
+          </View>
+        </LinearGradient>
+
+        {/* Quick Stats */}
+        <View style={styles.statsRow}>
+          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+            <View style={[styles.statIcon, { backgroundColor: '#E8F5E9' }]}>
+              <IconSymbol 
+                android_material_icon_name="trending-up" 
+                size={20} 
+                color={colors.success} 
+              />
+            </View>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Investment</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>${totalIncome.toFixed(0)}</Text>
+            <Text style={[styles.statChange, { color: colors.success }]}>+12%</Text>
+          </View>
+
+          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+            <View style={[styles.statIcon, { backgroundColor: '#FFF3E0' }]}>
+              <IconSymbol 
+                android_material_icon_name="savings" 
+                size={20} 
+                color="#FF9800" 
+              />
+            </View>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Married Savings</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>${totalSavings.toFixed(0)}</Text>
+            <Text style={[styles.statChange, { color: colors.textSecondary }]}>0%</Text>
+          </View>
+
+          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+            <View style={[styles.statIcon, { backgroundColor: '#FCE4EC' }]}>
+              <IconSymbol 
+                android_material_icon_name="show-chart" 
+                size={20} 
+                color="#E91E63" 
+              />
+            </View>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Emergency</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>${totalInvestments.toFixed(0)}</Text>
+            <Text style={[styles.statChange, { color: colors.textSecondary }]}>0%</Text>
+          </View>
+        </View>
+
+        {/* Budgeting Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Budgeting</Text>
+            <TouchableOpacity>
+              <Text style={[styles.viewAnalytics, { color: colors.textSecondary }]}>View Analytics</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Placeholder for circular budget chart */}
+          <View style={[styles.budgetChart, { backgroundColor: colors.card }]}>
+            <View style={styles.budgetCircle}>
+              <Text style={[styles.budgetAmount, { color: colors.text }]}>$10,000</Text>
+            </View>
+            <View style={styles.budgetLegend}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: colors.accent }]} />
+                <Text style={[styles.legendText, { color: colors.text }]}>Shopping</Text>
+                <Text style={[styles.legendValue, { color: colors.text }]}>$3320</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: colors.secondary }]} />
+                <Text style={[styles.legendText, { color: colors.text }]}>Food</Text>
+                <Text style={[styles.legendValue, { color: colors.text }]}>$2400</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: colors.success }]} />
+                <Text style={[styles.legendText, { color: colors.text }]}>Invest</Text>
+                <Text style={[styles.legendValue, { color: colors.text }]}>$600</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: '#FF9800' }]} />
+                <Text style={[styles.legendText, { color: colors.text }]}>Tax</Text>
+                <Text style={[styles.legendValue, { color: colors.text }]}>$1920</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: '#E91E63' }]} />
+                <Text style={[styles.legendText, { color: colors.text }]}>Charity</Text>
+                <Text style={[styles.legendValue, { color: colors.text }]}>$1760</Text>
+              </View>
             </View>
           </View>
         </View>
 
-        {/* Transactions Section */}
+        {/* Activity Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent Transactions</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Activity</Text>
             <TouchableOpacity onPress={() => {
               console.log('Opening add transaction modal');
               setShowAddModal(true);
@@ -280,7 +376,7 @@ export default function HomeScreen() {
               </Text>
             </View>
           ) : (
-            transactions.map((transaction) => {
+            transactions.slice(0, 5).map((transaction) => {
               const typeColor = getTypeColor(transaction.type);
               const typeIcon = getTypeIcon(transaction.type);
               const transactionDate = new Date(transaction.date).toLocaleDateString();
@@ -296,7 +392,7 @@ export default function HomeScreen() {
                     />
                   </View>
                   <View style={styles.transactionInfo}>
-                    <Text style={[styles.transactionCategory, { color: theme.colors.text }]}>
+                    <Text style={[styles.transactionCategory, { color: colors.text }]}>
                       {transaction.category}
                     </Text>
                     {!!transaction.description && (
@@ -304,13 +400,10 @@ export default function HomeScreen() {
                         {transaction.description}
                       </Text>
                     )}
-                    <Text style={[styles.transactionDate, { color: colors.textSecondary }]}>
-                      {transactionDate}
-                    </Text>
                   </View>
                   <View style={styles.transactionRight}>
-                    <Text style={[styles.transactionAmount, { color: typeColor }]}>
-                      ${amountNum.toFixed(2)}
+                    <Text style={[styles.transactionAmount, { color: colors.text }]}>
+                      -${amountNum.toFixed(2)}
                     </Text>
                     <TouchableOpacity
                       onPress={() => confirmDeleteTransaction(transaction.id)}
@@ -333,6 +426,8 @@ export default function HomeScreen() {
             })
           )}
         </View>
+
+        <View style={{ height: 100 }} />
       </ScrollView>
 
       {/* Add Transaction Modal */}
@@ -345,12 +440,12 @@ export default function HomeScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Add Transaction</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Add Transaction</Text>
               <TouchableOpacity onPress={() => setShowAddModal(false)}>
                 <IconSymbol 
                   android_material_icon_name="close" 
                   size={24} 
-                  color={theme.colors.text} 
+                  color={colors.text} 
                 />
               </TouchableOpacity>
             </View>
@@ -360,13 +455,15 @@ export default function HomeScreen() {
               <TouchableOpacity
                 style={[
                   styles.typeButton,
-                  selectedType === 'income' && { backgroundColor: colors.primary }
+                  { backgroundColor: colors.border },
+                  selectedType === 'income' && { backgroundColor: colors.success }
                 ]}
                 onPress={() => setSelectedType('income')}
               >
                 <Text style={[
                   styles.typeButtonText,
-                  { color: selectedType === 'income' ? '#FFF' : colors.text }
+                  { color: colors.text },
+                  selectedType === 'income' && { color: '#FFF' }
                 ]}>
                   Income
                 </Text>
@@ -374,13 +471,15 @@ export default function HomeScreen() {
               <TouchableOpacity
                 style={[
                   styles.typeButton,
+                  { backgroundColor: colors.border },
                   selectedType === 'saving' && { backgroundColor: colors.secondary }
                 ]}
                 onPress={() => setSelectedType('saving')}
               >
                 <Text style={[
                   styles.typeButtonText,
-                  { color: selectedType === 'saving' ? '#FFF' : colors.text }
+                  { color: colors.text },
+                  selectedType === 'saving' && { color: '#FFF' }
                 ]}>
                   Saving
                 </Text>
@@ -388,13 +487,15 @@ export default function HomeScreen() {
               <TouchableOpacity
                 style={[
                   styles.typeButton,
+                  { backgroundColor: colors.border },
                   selectedType === 'investment' && { backgroundColor: colors.accent }
                 ]}
                 onPress={() => setSelectedType('investment')}
               >
                 <Text style={[
                   styles.typeButtonText,
-                  { color: selectedType === 'investment' ? '#FFF' : colors.text }
+                  { color: colors.text },
+                  selectedType === 'investment' && { color: '#FFF' }
                 ]}>
                   Investment
                 </Text>
@@ -402,7 +503,7 @@ export default function HomeScreen() {
             </View>
 
             <TextInput
-              style={[styles.input, { color: theme.colors.text, borderColor: colors.border }]}
+              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
               placeholder="Amount"
               placeholderTextColor={colors.textSecondary}
               value={amount}
@@ -411,7 +512,7 @@ export default function HomeScreen() {
             />
 
             <TextInput
-              style={[styles.input, { color: theme.colors.text, borderColor: colors.border }]}
+              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
               placeholder="Category (e.g., Salary, Rent)"
               placeholderTextColor={colors.textSecondary}
               value={category}
@@ -419,7 +520,7 @@ export default function HomeScreen() {
             />
 
             <TextInput
-              style={[styles.input, { color: theme.colors.text, borderColor: colors.border }]}
+              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
               placeholder="Description (optional)"
               placeholderTextColor={colors.textSecondary}
               value={description}
@@ -428,15 +529,22 @@ export default function HomeScreen() {
             />
 
             <TouchableOpacity
-              style={[styles.addButton, { backgroundColor: colors.primary, opacity: addingTransaction ? 0.7 : 1 }]}
+              style={[styles.addButton, { opacity: addingTransaction ? 0.7 : 1 }]}
               onPress={handleAddTransaction}
               disabled={addingTransaction}
             >
-              {addingTransaction ? (
-                <ActivityIndicator color="#FFF" />
-              ) : (
-                <Text style={styles.addButtonText}>Add Transaction</Text>
-              )}
+              <LinearGradient
+                colors={[colors.gradientStart, colors.gradientEnd]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.addButtonGradient}
+              >
+                {addingTransaction ? (
+                  <ActivityIndicator color="#FFF" />
+                ) : (
+                  <Text style={styles.addButtonText}>Add Transaction</Text>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         </View>
@@ -451,7 +559,7 @@ export default function HomeScreen() {
       >
         <View style={styles.feedbackOverlay}>
           <View style={[styles.feedbackContent, { backgroundColor: colors.card }]}>
-            <Text style={[styles.feedbackTitle, { color: theme.colors.text }]}>
+            <Text style={[styles.feedbackTitle, { color: colors.text }]}>
               {feedbackModal.title}
             </Text>
             <Text style={[styles.feedbackMessage, { color: colors.textSecondary }]}>
@@ -464,7 +572,7 @@ export default function HomeScreen() {
                     style={[styles.feedbackButton, { backgroundColor: colors.border }]}
                     onPress={hideFeedback}
                   >
-                    <Text style={[styles.feedbackButtonText, { color: theme.colors.text }]}>Cancel</Text>
+                    <Text style={[styles.feedbackButtonText, { color: colors.text }]}>Cancel</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.feedbackButton, { backgroundColor: colors.danger }]}
@@ -479,7 +587,7 @@ export default function HomeScreen() {
               ) : (
                 <TouchableOpacity
                   style={[styles.feedbackButton, { 
-                    backgroundColor: feedbackModal.type === 'success' ? colors.primary : colors.danger,
+                    backgroundColor: feedbackModal.type === 'success' ? colors.success : colors.danger,
                     flex: 1,
                   }]}
                   onPress={hideFeedback}
@@ -505,13 +613,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'android' ? 20 : 0,
-    paddingBottom: 16,
+    paddingBottom: 20,
   },
   greeting: {
     fontSize: 14,
+    fontWeight: '500',
   },
   userName: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     marginTop: 4,
   },
@@ -519,48 +628,109 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.primary + '20',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   content: {
     flex: 1,
     paddingHorizontal: 20,
   },
   balanceCard: {
-    borderRadius: 20,
+    borderRadius: 24,
     padding: 24,
-    marginBottom: 24,
+    marginBottom: 20,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  balanceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   balanceLabel: {
     fontSize: 14,
     color: '#FFF',
     opacity: 0.9,
+    fontWeight: '500',
+  },
+  downloadButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   balanceAmount: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: 'bold',
     color: '#FFF',
-    marginTop: 8,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   balanceRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 20,
   },
   balanceItem: {
     flex: 1,
   },
   balanceItemLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#FFF',
-    opacity: 0.8,
+    opacity: 0.85,
+    fontWeight: '500',
   },
   balanceItemValue: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFF',
     marginTop: 4,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  statCard: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  statIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  statLabel: {
+    fontSize: 11,
+    marginBottom: 6,
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statChange: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   section: {
     marginBottom: 24,
@@ -574,6 +744,57 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  viewAnalytics: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  budgetChart: {
+    borderRadius: 20,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  budgetCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 8,
+    borderColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  budgetAmount: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  budgetLegend: {
+    flex: 1,
+    gap: 8,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  legendDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  legendText: {
+    fontSize: 13,
+    flex: 1,
+  },
+  legendValue: {
+    fontSize: 13,
+    fontWeight: '600',
   },
   emptyState: {
     borderRadius: 16,
@@ -596,6 +817,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   transactionIcon: {
     width: 48,
@@ -609,11 +835,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   transactionCategory: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
   },
   transactionDescription: {
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 2,
   },
   transactionDate: {
@@ -621,7 +847,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   transactionAmount: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   transactionRight: {
@@ -662,7 +888,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
-    backgroundColor: colors.border,
   },
   typeButtonText: {
     fontSize: 14,
@@ -677,9 +902,12 @@ const styles = StyleSheet.create({
   },
   addButton: {
     borderRadius: 12,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  addButtonGradient: {
     padding: 16,
     alignItems: 'center',
-    marginTop: 8,
   },
   addButtonText: {
     color: '#FFF',

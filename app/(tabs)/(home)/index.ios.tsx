@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+
 import React, { useState, useEffect } from "react";
 import { 
   StyleSheet, 
@@ -11,6 +11,8 @@ import {
   TextInput,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { Stack } from "expo-router";
+import { LinearGradient } from 'expo-linear-gradient';
 import { IconSymbol } from "@/components/IconSymbol";
 import { colors } from "@/styles/commonStyles";
 import { useAuth } from "@/contexts/AuthContext";
@@ -71,11 +73,6 @@ export default function HomeScreen() {
     setFeedbackModal(prev => ({ ...prev, visible: false }));
   };
 
-  const toNumber = (val: string | number): number => {
-    if (typeof val === 'number') return val;
-    return parseFloat(val) || 0;
-  };
-
   useEffect(() => {
     if (!authLoading && !user) {
       console.log('User not authenticated, redirecting to auth screen');
@@ -85,6 +82,11 @@ export default function HomeScreen() {
       loadData();
     }
   }, [user, authLoading]);
+
+  const toNumber = (val: string | number): number => {
+    if (typeof val === 'number') return val;
+    return parseFloat(val) || 0;
+  };
 
   const loadData = async () => {
     console.log('[API] Loading transactions and summary');
@@ -127,7 +129,6 @@ export default function HomeScreen() {
       
       setTransactions(prev => [created, ...prev]);
       
-      // Refresh summary from server
       const summaryData = await authenticatedGet<Summary>('/api/transactions/summary');
       setSummary(summaryData);
       
@@ -160,7 +161,6 @@ export default function HomeScreen() {
       await authenticatedDelete(`/api/transactions/${id}`);
       console.log('[API] Transaction deleted:', id);
       setTransactions(prev => prev.filter(t => t.id !== id));
-      // Refresh summary
       const summaryData = await authenticatedGet<Summary>('/api/transactions/summary');
       setSummary(summaryData);
     } catch (error) {
@@ -173,7 +173,7 @@ export default function HomeScreen() {
 
   const getTypeColor = (type: string) => {
     const typeColorMap: { [key: string]: string } = {
-      income: colors.primary,
+      income: colors.success,
       saving: colors.secondary,
       investment: colors.accent,
     };
@@ -191,17 +191,10 @@ export default function HomeScreen() {
 
   if (authLoading || loading) {
     return (
-      <>
-        <Stack.Screen
-          options={{
-            title: "Transactions",
-            headerLargeTitle: true,
-          }}
-        />
-        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
-      </>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
     );
   }
 
@@ -211,298 +204,356 @@ export default function HomeScreen() {
   const totalBalance = totalIncome - totalSavings - totalInvestments;
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: "Transactions",
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Stack.Screen 
+        options={{ 
+          headerShown: true,
           headerLargeTitle: true,
+          headerTransparent: true,
+          headerBlurEffect: 'systemMaterial',
+          title: 'Financial Report',
           headerRight: () => (
             <TouchableOpacity 
               onPress={() => {
                 console.log('Opening AI Financial Advisor');
                 router.push('/chat/advisor');
               }}
+              style={styles.headerButton}
             >
               <IconSymbol 
-                ios_icon_name="message.fill"
                 android_material_icon_name="chat" 
                 size={24} 
                 color={colors.primary} 
               />
             </TouchableOpacity>
           ),
-        }}
+        }} 
       />
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {/* Balance Card */}
-          <View style={[styles.balanceCard, { backgroundColor: colors.primary }]}>
-            <Text style={styles.balanceLabel}>Total Balance</Text>
-            <Text style={styles.balanceAmount}>${totalBalance.toFixed(2)}</Text>
-            <View style={styles.balanceRow}>
-              <View style={styles.balanceItem}>
-                <Text style={styles.balanceItemLabel}>Income</Text>
-                <Text style={styles.balanceItemValue}>${totalIncome.toFixed(2)}</Text>
-              </View>
-              <View style={styles.balanceItem}>
-                <Text style={styles.balanceItemLabel}>Savings</Text>
-                <Text style={styles.balanceItemValue}>${totalSavings.toFixed(2)}</Text>
-              </View>
-              <View style={styles.balanceItem}>
-                <Text style={styles.balanceItemLabel}>Investments</Text>
-                <Text style={styles.balanceItemValue}>${totalInvestments.toFixed(2)}</Text>
-              </View>
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="automatic">
+        {/* Balance Card with Gradient */}
+        <LinearGradient
+          colors={[colors.gradientStart, colors.gradientEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.balanceCard}
+        >
+          <View style={styles.balanceHeader}>
+            <Text style={styles.balanceLabel}>Money Limit</Text>
+            <TouchableOpacity style={styles.downloadButton}>
+              <IconSymbol 
+                android_material_icon_name="download" 
+                size={20} 
+                color="#FFFFFF" 
+              />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.balanceAmount}>${totalBalance.toFixed(0)}</Text>
+          <View style={styles.balanceRow}>
+            <View style={styles.balanceItem}>
+              <Text style={styles.balanceItemLabel}>Net Worth</Text>
+            </View>
+            <View style={styles.balanceItem}>
+              <Text style={styles.balanceItemLabel}>Spending</Text>
             </View>
           </View>
+        </LinearGradient>
 
-          {/* Transactions Section */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent Transactions</Text>
-              <TouchableOpacity onPress={() => {
-                console.log('Opening add transaction modal');
-                setShowAddModal(true);
-              }}>
+        {/* Quick Stats */}
+        <View style={styles.statsRow}>
+          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+            <View style={[styles.statIcon, { backgroundColor: '#E8F5E9' }]}>
+              <IconSymbol 
+                android_material_icon_name="trending-up" 
+                size={20} 
+                color={colors.success} 
+              />
+            </View>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Investment</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>${totalIncome.toFixed(0)}</Text>
+            <Text style={[styles.statChange, { color: colors.success }]}>+12%</Text>
+          </View>
+
+          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+            <View style={[styles.statIcon, { backgroundColor: '#FFF3E0' }]}>
+              <IconSymbol 
+                android_material_icon_name="savings" 
+                size={20} 
+                color="#FF9800" 
+              />
+            </View>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Married Savings</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>${totalSavings.toFixed(0)}</Text>
+            <Text style={[styles.statChange, { color: colors.textSecondary }]}>0%</Text>
+          </View>
+
+          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+            <View style={[styles.statIcon, { backgroundColor: '#FCE4EC' }]}>
+              <IconSymbol 
+                android_material_icon_name="show-chart" 
+                size={20} 
+                color="#E91E63" 
+              />
+            </View>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Emergency</Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>${totalInvestments.toFixed(0)}</Text>
+            <Text style={[styles.statChange, { color: colors.textSecondary }]}>0%</Text>
+          </View>
+        </View>
+
+        {/* Activity Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Activity</Text>
+            <TouchableOpacity onPress={() => {
+              console.log('Opening add transaction modal');
+              setShowAddModal(true);
+            }}>
+              <IconSymbol 
+                android_material_icon_name="add-circle" 
+                size={28} 
+                color={colors.primary} 
+              />
+            </TouchableOpacity>
+          </View>
+
+          {transactions.length === 0 ? (
+            <View style={[styles.emptyState, { backgroundColor: colors.card }]}>
+              <IconSymbol 
+                android_material_icon_name="receipt-long" 
+                size={48} 
+                color={colors.textSecondary} 
+              />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No transactions yet
+              </Text>
+              <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
+                Add your first transaction to get started
+              </Text>
+            </View>
+          ) : (
+            transactions.slice(0, 5).map((transaction) => {
+              const typeColor = getTypeColor(transaction.type);
+              const typeIcon = getTypeIcon(transaction.type);
+              const amountNum = toNumber(transaction.amount);
+              
+              return (
+                <View key={transaction.id} style={[styles.transactionCard, { backgroundColor: colors.card }]}>
+                  <View style={[styles.transactionIcon, { backgroundColor: typeColor + '20' }]}>
+                    <IconSymbol 
+                      android_material_icon_name={typeIcon} 
+                      size={24} 
+                      color={typeColor} 
+                    />
+                  </View>
+                  <View style={styles.transactionInfo}>
+                    <Text style={[styles.transactionCategory, { color: colors.text }]}>
+                      {transaction.category}
+                    </Text>
+                    {!!transaction.description && (
+                      <Text style={[styles.transactionDescription, { color: colors.textSecondary }]}>
+                        {transaction.description}
+                      </Text>
+                    )}
+                  </View>
+                  <View style={styles.transactionRight}>
+                    <Text style={[styles.transactionAmount, { color: colors.text }]}>
+                      -${amountNum.toFixed(2)}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => confirmDeleteTransaction(transaction.id)}
+                      disabled={deletingId === transaction.id}
+                      style={styles.deleteButton}
+                    >
+                      {deletingId === transaction.id ? (
+                        <ActivityIndicator size="small" color={colors.danger} />
+                      ) : (
+                        <IconSymbol
+                          android_material_icon_name="delete"
+                          size={18}
+                          color={colors.danger}
+                        />
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            })
+          )}
+        </View>
+
+        <View style={{ height: 100 }} />
+      </ScrollView>
+
+      {/* Add Transaction Modal */}
+      <Modal
+        visible={showAddModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowAddModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Add Transaction</Text>
+              <TouchableOpacity onPress={() => setShowAddModal(false)}>
                 <IconSymbol 
-                  ios_icon_name="plus.circle.fill"
-                  android_material_icon_name="add-circle" 
-                  size={28} 
-                  color={colors.primary} 
+                  android_material_icon_name="close" 
+                  size={24} 
+                  color={colors.text} 
                 />
               </TouchableOpacity>
             </View>
 
-            {transactions.length === 0 ? (
-              <View style={[styles.emptyState, { backgroundColor: colors.card }]}>
-                <IconSymbol 
-                  ios_icon_name="doc.text"
-                  android_material_icon_name="receipt-long" 
-                  size={48} 
-                  color={colors.textSecondary} 
-                />
-                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                  No transactions yet
-                </Text>
-                <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
-                  Add your first transaction to get started
-                </Text>
-              </View>
-            ) : (
-              transactions.map((transaction) => {
-                const typeColor = getTypeColor(transaction.type);
-                const typeIcon = getTypeIcon(transaction.type);
-                const transactionDate = new Date(transaction.date).toLocaleDateString();
-                const amountNum = toNumber(transaction.amount);
-                
-                return (
-                  <View key={transaction.id} style={[styles.transactionCard, { backgroundColor: colors.card }]}>
-                    <View style={[styles.transactionIcon, { backgroundColor: typeColor + '20' }]}>
-                      <IconSymbol 
-                        android_material_icon_name={typeIcon} 
-                        size={24} 
-                        color={typeColor} 
-                      />
-                    </View>
-                    <View style={styles.transactionInfo}>
-                      <Text style={[styles.transactionCategory, { color: theme.colors.text }]}>
-                        {transaction.category}
-                      </Text>
-                      {!!transaction.description && (
-                        <Text style={[styles.transactionDescription, { color: colors.textSecondary }]}>
-                          {transaction.description}
-                        </Text>
-                      )}
-                      <Text style={[styles.transactionDate, { color: colors.textSecondary }]}>
-                        {transactionDate}
-                      </Text>
-                    </View>
-                    <View style={styles.transactionRight}>
-                      <Text style={[styles.transactionAmount, { color: typeColor }]}>
-                        ${amountNum.toFixed(2)}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => confirmDeleteTransaction(transaction.id)}
-                        disabled={deletingId === transaction.id}
-                        style={styles.deleteButton}
-                      >
-                        {deletingId === transaction.id ? (
-                          <ActivityIndicator size="small" color={colors.danger} />
-                        ) : (
-                          <IconSymbol
-                            ios_icon_name="trash"
-                            android_material_icon_name="delete"
-                            size={18}
-                            color={colors.danger}
-                          />
-                        )}
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                );
-              })
-            )}
-          </View>
-        </ScrollView>
-
-        {/* Add Transaction Modal */}
-        <Modal
-          visible={showAddModal}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setShowAddModal(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-              <View style={styles.modalHeader}>
-                <Text style={[styles.modalTitle, { color: theme.colors.text }]}>Add Transaction</Text>
-                <TouchableOpacity onPress={() => setShowAddModal(false)}>
-                  <IconSymbol 
-                    ios_icon_name="xmark"
-                    android_material_icon_name="close" 
-                    size={24} 
-                    color={theme.colors.text} 
-                  />
-                </TouchableOpacity>
-              </View>
-
-              {/* Type Selection */}
-              <View style={styles.typeSelector}>
-                <TouchableOpacity
-                  style={[
-                    styles.typeButton,
-                    selectedType === 'income' && { backgroundColor: colors.primary }
-                  ]}
-                  onPress={() => setSelectedType('income')}
-                >
-                  <Text style={[
-                    styles.typeButtonText,
-                    { color: selectedType === 'income' ? '#FFF' : colors.text }
-                  ]}>
-                    Income
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.typeButton,
-                    selectedType === 'saving' && { backgroundColor: colors.secondary }
-                  ]}
-                  onPress={() => setSelectedType('saving')}
-                >
-                  <Text style={[
-                    styles.typeButtonText,
-                    { color: selectedType === 'saving' ? '#FFF' : colors.text }
-                  ]}>
-                    Saving
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.typeButton,
-                    selectedType === 'investment' && { backgroundColor: colors.accent }
-                  ]}
-                  onPress={() => setSelectedType('investment')}
-                >
-                  <Text style={[
-                    styles.typeButtonText,
-                    { color: selectedType === 'investment' ? '#FFF' : colors.text }
-                  ]}>
-                    Investment
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              <TextInput
-                style={[styles.input, { color: theme.colors.text, borderColor: colors.border }]}
-                placeholder="Amount"
-                placeholderTextColor={colors.textSecondary}
-                value={amount}
-                onChangeText={setAmount}
-                keyboardType="decimal-pad"
-              />
-
-              <TextInput
-                style={[styles.input, { color: theme.colors.text, borderColor: colors.border }]}
-                placeholder="Category (e.g., Salary, Rent)"
-                placeholderTextColor={colors.textSecondary}
-                value={category}
-                onChangeText={setCategory}
-              />
-
-              <TextInput
-                style={[styles.input, { color: theme.colors.text, borderColor: colors.border }]}
-                placeholder="Description (optional)"
-                placeholderTextColor={colors.textSecondary}
-                value={description}
-                onChangeText={setDescription}
-                multiline
-              />
-
+            <View style={styles.typeSelector}>
               <TouchableOpacity
-                style={[styles.addButton, { backgroundColor: colors.primary, opacity: addingTransaction ? 0.7 : 1 }]}
-                onPress={handleAddTransaction}
-                disabled={addingTransaction}
+                style={[
+                  styles.typeButton,
+                  { backgroundColor: colors.border },
+                  selectedType === 'income' && { backgroundColor: colors.success }
+                ]}
+                onPress={() => setSelectedType('income')}
+              >
+                <Text style={[
+                  styles.typeButtonText,
+                  { color: colors.text },
+                  selectedType === 'income' && { color: '#FFF' }
+                ]}>
+                  Income
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.typeButton,
+                  { backgroundColor: colors.border },
+                  selectedType === 'saving' && { backgroundColor: colors.secondary }
+                ]}
+                onPress={() => setSelectedType('saving')}
+              >
+                <Text style={[
+                  styles.typeButtonText,
+                  { color: colors.text },
+                  selectedType === 'saving' && { color: '#FFF' }
+                ]}>
+                  Saving
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.typeButton,
+                  { backgroundColor: colors.border },
+                  selectedType === 'investment' && { backgroundColor: colors.accent }
+                ]}
+                onPress={() => setSelectedType('investment')}
+              >
+                <Text style={[
+                  styles.typeButtonText,
+                  { color: colors.text },
+                  selectedType === 'investment' && { color: '#FFF' }
+                ]}>
+                  Investment
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <TextInput
+              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
+              placeholder="Amount"
+              placeholderTextColor={colors.textSecondary}
+              value={amount}
+              onChangeText={setAmount}
+              keyboardType="decimal-pad"
+            />
+
+            <TextInput
+              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
+              placeholder="Category (e.g., Salary, Rent)"
+              placeholderTextColor={colors.textSecondary}
+              value={category}
+              onChangeText={setCategory}
+            />
+
+            <TextInput
+              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
+              placeholder="Description (optional)"
+              placeholderTextColor={colors.textSecondary}
+              value={description}
+              onChangeText={setDescription}
+              multiline
+            />
+
+            <TouchableOpacity
+              style={[styles.addButton, { opacity: addingTransaction ? 0.7 : 1 }]}
+              onPress={handleAddTransaction}
+              disabled={addingTransaction}
+            >
+              <LinearGradient
+                colors={[colors.gradientStart, colors.gradientEnd]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.addButtonGradient}
               >
                 {addingTransaction ? (
                   <ActivityIndicator color="#FFF" />
                 ) : (
                   <Text style={styles.addButtonText}>Add Transaction</Text>
                 )}
-              </TouchableOpacity>
-            </View>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
-        </Modal>
+        </View>
+      </Modal>
 
-        {/* Feedback / Confirm Modal */}
-        <Modal
-          visible={feedbackModal.visible}
-          animationType="fade"
-          transparent={true}
-          onRequestClose={hideFeedback}
-        >
-          <View style={styles.feedbackOverlay}>
-            <View style={[styles.feedbackContent, { backgroundColor: colors.card }]}>
-              <Text style={[styles.feedbackTitle, { color: theme.colors.text }]}>
-                {feedbackModal.title}
-              </Text>
-              <Text style={[styles.feedbackMessage, { color: colors.textSecondary }]}>
-                {feedbackModal.message}
-              </Text>
-              <View style={styles.feedbackButtons}>
-                {feedbackModal.type === 'confirm' ? (
-                  <>
-                    <TouchableOpacity
-                      style={[styles.feedbackButton, { backgroundColor: colors.border }]}
-                      onPress={hideFeedback}
-                    >
-                      <Text style={[styles.feedbackButtonText, { color: theme.colors.text }]}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.feedbackButton, { backgroundColor: colors.danger }]}
-                      onPress={() => {
-                        hideFeedback();
-                        feedbackModal.onConfirm?.();
-                      }}
-                    >
-                      <Text style={[styles.feedbackButtonText, { color: '#FFF' }]}>Delete</Text>
-                    </TouchableOpacity>
-                  </>
-                ) : (
+      {/* Feedback / Confirm Modal */}
+      <Modal
+        visible={feedbackModal.visible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={hideFeedback}
+      >
+        <View style={styles.feedbackOverlay}>
+          <View style={[styles.feedbackContent, { backgroundColor: colors.card }]}>
+            <Text style={[styles.feedbackTitle, { color: colors.text }]}>
+              {feedbackModal.title}
+            </Text>
+            <Text style={[styles.feedbackMessage, { color: colors.textSecondary }]}>
+              {feedbackModal.message}
+            </Text>
+            <View style={styles.feedbackButtons}>
+              {feedbackModal.type === 'confirm' ? (
+                <>
                   <TouchableOpacity
-                    style={[styles.feedbackButton, { 
-                      backgroundColor: feedbackModal.type === 'success' ? colors.primary : colors.danger,
-                      flex: 1,
-                    }]}
+                    style={[styles.feedbackButton, { backgroundColor: colors.border }]}
                     onPress={hideFeedback}
                   >
-                    <Text style={[styles.feedbackButtonText, { color: '#FFF' }]}>OK</Text>
+                    <Text style={[styles.feedbackButtonText, { color: colors.text }]}>Cancel</Text>
                   </TouchableOpacity>
-                )}
-              </View>
+                  <TouchableOpacity
+                    style={[styles.feedbackButton, { backgroundColor: colors.danger }]}
+                    onPress={() => {
+                      hideFeedback();
+                      feedbackModal.onConfirm?.();
+                    }}
+                  >
+                    <Text style={[styles.feedbackButtonText, { color: '#FFF' }]}>Delete</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.feedbackButton, { 
+                    backgroundColor: feedbackModal.type === 'success' ? colors.success : colors.danger,
+                    flex: 1,
+                  }]}
+                  onPress={hideFeedback}
+                >
+                  <Text style={[styles.feedbackButtonText, { color: '#FFF' }]}>OK</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
-        </Modal>
-      </View>
-    </>
+        </View>
+      </Modal>
+    </View>
   );
 }
 
@@ -510,45 +561,101 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primary + '20',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   content: {
     flex: 1,
     paddingHorizontal: 20,
   },
   balanceCard: {
-    borderRadius: 20,
+    borderRadius: 24,
     padding: 24,
-    marginTop: 16,
-    marginBottom: 24,
+    marginBottom: 20,
+    marginTop: 8,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+  },
+  balanceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   balanceLabel: {
     fontSize: 14,
     color: '#FFF',
     opacity: 0.9,
+    fontWeight: '500',
+  },
+  downloadButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   balanceAmount: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: 'bold',
     color: '#FFF',
-    marginTop: 8,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   balanceRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 20,
   },
   balanceItem: {
     flex: 1,
   },
   balanceItemLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#FFF',
-    opacity: 0.8,
+    opacity: 0.85,
+    fontWeight: '500',
   },
-  balanceItemValue: {
-    fontSize: 16,
+  statsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  statCard: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+  },
+  statIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  statLabel: {
+    fontSize: 11,
+    marginBottom: 6,
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statChange: {
+    fontSize: 12,
     fontWeight: '600',
-    color: '#FFF',
-    marginTop: 4,
   },
   section: {
     marginBottom: 24,
@@ -584,6 +691,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
   },
   transactionIcon: {
     width: 48,
@@ -597,19 +708,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   transactionCategory: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
   },
   transactionDescription: {
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 2,
   },
-  transactionDate: {
-    fontSize: 12,
-    marginTop: 4,
-  },
   transactionAmount: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   transactionRight: {
@@ -650,7 +757,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
-    backgroundColor: colors.border,
   },
   typeButtonText: {
     fontSize: 14,
@@ -665,9 +771,12 @@ const styles = StyleSheet.create({
   },
   addButton: {
     borderRadius: 12,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  addButtonGradient: {
     padding: 16,
     alignItems: 'center',
-    marginTop: 8,
   },
   addButtonText: {
     color: '#FFF',

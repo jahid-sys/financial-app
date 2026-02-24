@@ -1,29 +1,35 @@
+
 import { StyleSheet } from 'react-native';
 
-// Financial App Color Palette - Professional and Modern
+// Financial App Color Palette - Pink/Purple Gradient Theme (from design reference)
 export const colors = {
-  // Light theme
-  background: '#F8FAFC',
+  // Light theme - Pink/Purple Gradient Design
+  background: '#F5E6F0', // Soft pink background
   card: '#FFFFFF',
-  text: '#1E293B',
-  textSecondary: '#64748B',
-  primary: '#10B981', // Green for positive/income
-  secondary: '#3B82F6', // Blue for savings
-  accent: '#8B5CF6', // Purple for investments
-  highlight: '#F59E0B', // Amber for highlights
-  danger: '#EF4444', // Red for expenses
-  border: '#E2E8F0',
+  text: '#2D1B3D', // Deep purple text
+  textSecondary: '#8B7A99', // Muted purple
+  primary: '#D4A5D8', // Soft purple/pink
+  secondary: '#B88BB8', // Medium purple
+  accent: '#9B6B9E', // Deep purple accent
+  highlight: '#E8B4E8', // Light pink highlight
+  danger: '#E85D75', // Soft red
+  border: '#E8D4E8',
+  success: '#A8D5BA', // Soft green for positive values
+  
+  // Gradient colors for cards
+  gradientStart: '#D4A5D8',
+  gradientEnd: '#B88BB8',
   
   // Dark theme
-  darkBackground: '#0F172A',
-  darkCard: '#1E293B',
-  darkText: '#F1F5F9',
-  darkTextSecondary: '#94A3B8',
-  darkBorder: '#334155',
+  darkBackground: '#1A0F24',
+  darkCard: '#2D1B3D',
+  darkText: '#F5E6F0',
+  darkTextSecondary: '#B8A8C8',
+  darkBorder: '#3D2B4D',
 
   // Legacy aliases (kept for backward compatibility)
-  backgroundAlt: '#162133',
-  grey: '#90CAF9',
+  backgroundAlt: '#2D1B3D',
+  grey: '#B8A8C8',
 };
 
 export const buttonStyles = StyleSheet.create({
@@ -62,14 +68,14 @@ export const commonStyles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#9B6B9E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 3,
   },
   title: {
     fontSize: 24,
