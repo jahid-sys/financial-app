@@ -282,7 +282,7 @@ export default function HomeScreen() {
                 color="#FF9800" 
               />
             </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Married Savings</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Savings</Text>
             <Text style={[styles.statValue, { color: colors.text }]}>${totalSavings.toFixed(0)}</Text>
             <Text style={[styles.statChange, { color: colors.textSecondary }]}>0%</Text>
           </View>
