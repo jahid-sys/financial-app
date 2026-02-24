@@ -4,11 +4,11 @@
     "slug": "build-me-a-financial",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/app-icon-dmd.png",
+    "icon": "./assets/images/app-icon-txf.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/app-icon-dmd.png",
+      "image": "./assets/images/app-icon-txf.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -21,7 +21,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/app-icon-dmd.png",
+        "foregroundImage": "./assets/images/app-icon-txf.png",
         "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
