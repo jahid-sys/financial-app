@@ -209,8 +209,8 @@ export default function HomeScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <View>
-          <Text style={[styles.greeting, { color: colors.textSecondary }]}>Hi! How are you?</Text>
+        <View style={styles.headerLeft}>
+          <Text style={[styles.greeting, { color: colors.textSecondary }]}>Welcome back</Text>
           <Text style={[styles.userName, { color: colors.text }]}>
             {user?.name || 'User'}
           </Text>
@@ -222,208 +222,205 @@ export default function HomeScreen() {
           }}
           style={styles.advisorButton}
         >
-          <IconSymbol 
-            android_material_icon_name="chat" 
-            size={24} 
-            color="#FFFFFF" 
-          />
+          <LinearGradient
+            colors={[colors.gradientStart, colors.gradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.advisorButtonGradient}
+          >
+            <IconSymbol 
+              android_material_icon_name="chat" 
+              size={22} 
+              color="#FFFFFF" 
+            />
+          </LinearGradient>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Balance Card with Gradient */}
-        <LinearGradient
-          colors={[colors.gradientStart, colors.gradientEnd]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.balanceCard}
-        >
-          <View style={styles.balanceHeader}>
-            <Text style={styles.balanceLabel}>Money Limit</Text>
-            <TouchableOpacity style={styles.downloadButton}>
-              <IconSymbol 
-                android_material_icon_name="download" 
-                size={20} 
-                color="#FFFFFF" 
-              />
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.balanceAmount}>${totalBalance.toFixed(0)}</Text>
-          <View style={styles.balanceRow}>
-            <View style={styles.balanceItem}>
-              <Text style={styles.balanceItemLabel}>Net Worth</Text>
+        {/* Balance Overview Card */}
+        <View style={styles.overviewSection}>
+          <Text style={[styles.overviewTitle, { color: colors.text }]}>Financial Overview</Text>
+          
+          <LinearGradient
+            colors={[colors.gradientStart, colors.gradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.balanceCard}
+          >
+            <View style={styles.balanceContent}>
+              <Text style={styles.balanceLabel}>Total Balance</Text>
+              <Text style={styles.balanceAmount}>${totalBalance.toFixed(2)}</Text>
+              <Text style={styles.balanceSubtext}>Available funds</Text>
             </View>
-            <View style={styles.balanceItem}>
-              <Text style={styles.balanceItemLabel}>Spending</Text>
-            </View>
-          </View>
-        </LinearGradient>
-
-        {/* Quick Stats */}
-        <View style={styles.statsRow}>
-          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <View style={[styles.statIcon, { backgroundColor: '#E8F5E9' }]}>
-              <IconSymbol 
-                android_material_icon_name="trending-up" 
-                size={20} 
-                color={colors.success} 
-              />
-            </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Investment</Text>
-            <Text style={[styles.statValue, { color: colors.text }]}>${totalIncome.toFixed(0)}</Text>
-            <Text style={[styles.statChange, { color: colors.success }]}>+12%</Text>
-          </View>
-
-          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <View style={[styles.statIcon, { backgroundColor: '#FFF3E0' }]}>
-              <IconSymbol 
-                android_material_icon_name="savings" 
-                size={20} 
-                color="#FF9800" 
-              />
-            </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Savings</Text>
-            <Text style={[styles.statValue, { color: colors.text }]}>${totalSavings.toFixed(0)}</Text>
-            <Text style={[styles.statChange, { color: colors.textSecondary }]}>0%</Text>
-          </View>
-
-          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-            <View style={[styles.statIcon, { backgroundColor: '#FCE4EC' }]}>
-              <IconSymbol 
-                android_material_icon_name="show-chart" 
-                size={20} 
-                color="#E91E63" 
-              />
-            </View>
-            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Emergency</Text>
-            <Text style={[styles.statValue, { color: colors.text }]}>${totalInvestments.toFixed(0)}</Text>
-            <Text style={[styles.statChange, { color: colors.textSecondary }]}>0%</Text>
-          </View>
+          </LinearGradient>
         </View>
 
-        {/* Budgeting Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Budgeting</Text>
-            <TouchableOpacity>
-              <Text style={[styles.viewAnalytics, { color: colors.textSecondary }]}>View Analytics</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Placeholder for circular budget chart */}
-          <View style={[styles.budgetChart, { backgroundColor: colors.card }]}>
-            <View style={styles.budgetCircle}>
-              <Text style={[styles.budgetAmount, { color: colors.text }]}>$10,000</Text>
+        {/* Financial Summary Cards */}
+        <View style={styles.summarySection}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Summary</Text>
+          
+          <View style={styles.summaryGrid}>
+            {/* Income Card */}
+            <View style={[styles.summaryCard, { backgroundColor: colors.card }]}>
+              <View style={styles.summaryCardHeader}>
+                <View style={[styles.summaryIcon, { backgroundColor: '#E8F5E9' }]}>
+                  <IconSymbol 
+                    android_material_icon_name="trending-up" 
+                    size={20} 
+                    color={colors.success} 
+                  />
+                </View>
+                <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Income</Text>
+              </View>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>
+                ${totalIncome.toFixed(2)}
+              </Text>
             </View>
-            <View style={styles.budgetLegend}>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: colors.accent }]} />
-                <Text style={[styles.legendText, { color: colors.text }]}>Shopping</Text>
-                <Text style={[styles.legendValue, { color: colors.text }]}>$3320</Text>
+
+            {/* Savings Card */}
+            <View style={[styles.summaryCard, { backgroundColor: colors.card }]}>
+              <View style={styles.summaryCardHeader}>
+                <View style={[styles.summaryIcon, { backgroundColor: '#F3E5F5' }]}>
+                  <IconSymbol 
+                    android_material_icon_name="savings" 
+                    size={20} 
+                    color={colors.secondary} 
+                  />
+                </View>
+                <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Savings</Text>
               </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: colors.secondary }]} />
-                <Text style={[styles.legendText, { color: colors.text }]}>Food</Text>
-                <Text style={[styles.legendValue, { color: colors.text }]}>$2400</Text>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>
+                ${totalSavings.toFixed(2)}
+              </Text>
+            </View>
+
+            {/* Investment Card */}
+            <View style={[styles.summaryCard, { backgroundColor: colors.card }]}>
+              <View style={styles.summaryCardHeader}>
+                <View style={[styles.summaryIcon, { backgroundColor: '#EDE7F6' }]}>
+                  <IconSymbol 
+                    android_material_icon_name="show-chart" 
+                    size={20} 
+                    color={colors.accent} 
+                  />
+                </View>
+                <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Investments</Text>
               </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: colors.success }]} />
-                <Text style={[styles.legendText, { color: colors.text }]}>Invest</Text>
-                <Text style={[styles.legendValue, { color: colors.text }]}>$600</Text>
-              </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#FF9800' }]} />
-                <Text style={[styles.legendText, { color: colors.text }]}>Tax</Text>
-                <Text style={[styles.legendValue, { color: colors.text }]}>$1920</Text>
-              </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#E91E63' }]} />
-                <Text style={[styles.legendText, { color: colors.text }]}>Charity</Text>
-                <Text style={[styles.legendValue, { color: colors.text }]}>$1760</Text>
-              </View>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>
+                ${totalInvestments.toFixed(2)}
+              </Text>
             </View>
           </View>
         </View>
 
-        {/* Activity Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Activity</Text>
-            <TouchableOpacity onPress={() => {
-              console.log('Opening add transaction modal');
-              setShowAddModal(true);
-            }}>
-              <IconSymbol 
-                android_material_icon_name="add-circle" 
-                size={28} 
-                color={colors.primary} 
-              />
+        {/* Recent Transactions */}
+        <View style={styles.transactionsSection}>
+          <View style={styles.transactionsSectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Transactions</Text>
+            <TouchableOpacity 
+              onPress={() => {
+                console.log('Opening add transaction modal');
+                setShowAddModal(true);
+              }}
+              style={styles.addButton}
+            >
+              <LinearGradient
+                colors={[colors.gradientStart, colors.gradientEnd]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.addButtonGradient}
+              >
+                <IconSymbol 
+                  android_material_icon_name="add" 
+                  size={20} 
+                  color="#FFFFFF" 
+                />
+                <Text style={styles.addButtonText}>Add</Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
 
           {transactions.length === 0 ? (
             <View style={[styles.emptyState, { backgroundColor: colors.card }]}>
-              <IconSymbol 
-                android_material_icon_name="receipt-long" 
-                size={48} 
-                color={colors.textSecondary} 
-              />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              <View style={[styles.emptyIconContainer, { backgroundColor: colors.background }]}>
+                <IconSymbol 
+                  android_material_icon_name="receipt-long" 
+                  size={40} 
+                  color={colors.textSecondary} 
+                />
+              </View>
+              <Text style={[styles.emptyText, { color: colors.text }]}>
                 No transactions yet
               </Text>
               <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
-                Add your first transaction to get started
+                Start tracking your finances by adding your first transaction
               </Text>
             </View>
           ) : (
-            transactions.slice(0, 5).map((transaction) => {
-              const typeColor = getTypeColor(transaction.type);
-              const typeIcon = getTypeIcon(transaction.type);
-              const transactionDate = new Date(transaction.date).toLocaleDateString();
-              const amountNum = toNumber(transaction.amount);
-              
-              return (
-                <View key={transaction.id} style={[styles.transactionCard, { backgroundColor: colors.card }]}>
-                  <View style={[styles.transactionIcon, { backgroundColor: typeColor + '20' }]}>
-                    <IconSymbol 
-                      android_material_icon_name={typeIcon} 
-                      size={24} 
-                      color={typeColor} 
-                    />
-                  </View>
-                  <View style={styles.transactionInfo}>
-                    <Text style={[styles.transactionCategory, { color: colors.text }]}>
-                      {transaction.category}
-                    </Text>
-                    {!!transaction.description && (
-                      <Text style={[styles.transactionDescription, { color: colors.textSecondary }]}>
-                        {transaction.description}
+            <View style={styles.transactionsList}>
+              {transactions.slice(0, 10).map((transaction) => {
+                const typeColor = getTypeColor(transaction.type);
+                const typeIcon = getTypeIcon(transaction.type);
+                const transactionDate = new Date(transaction.date).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                });
+                const amountNum = toNumber(transaction.amount);
+                
+                return (
+                  <View key={transaction.id} style={[styles.transactionCard, { backgroundColor: colors.card }]}>
+                    <View style={[styles.transactionIcon, { backgroundColor: typeColor + '15' }]}>
+                      <IconSymbol 
+                        android_material_icon_name={typeIcon} 
+                        size={22} 
+                        color={typeColor} 
+                      />
+                    </View>
+                    <View style={styles.transactionInfo}>
+                      <Text style={[styles.transactionCategory, { color: colors.text }]}>
+                        {transaction.category}
                       </Text>
-                    )}
-                  </View>
-                  <View style={styles.transactionRight}>
-                    <Text style={[styles.transactionAmount, { color: colors.text }]}>
-                      -${amountNum.toFixed(2)}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => confirmDeleteTransaction(transaction.id)}
-                      disabled={deletingId === transaction.id}
-                      style={styles.deleteButton}
-                    >
-                      {deletingId === transaction.id ? (
-                        <ActivityIndicator size="small" color={colors.danger} />
-                      ) : (
-                        <IconSymbol
-                          android_material_icon_name="delete"
-                          size={18}
-                          color={colors.danger}
-                        />
+                      <View style={styles.transactionMeta}>
+                        <Text style={[styles.transactionType, { color: typeColor }]}>
+                          {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                        </Text>
+                        <Text style={[styles.transactionMetaSeparator, { color: colors.textSecondary }]}>•</Text>
+                        <Text style={[styles.transactionDate, { color: colors.textSecondary }]}>
+                          {transactionDate}
+                        </Text>
+                      </View>
+                      {!!transaction.description && (
+                        <Text style={[styles.transactionDescription, { color: colors.textSecondary }]} numberOfLines={1}>
+                          {transaction.description}
+                        </Text>
                       )}
-                    </TouchableOpacity>
+                    </View>
+                    <View style={styles.transactionRight}>
+                      <Text style={[styles.transactionAmount, { color: colors.text }]}>
+                        ${amountNum.toFixed(2)}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => confirmDeleteTransaction(transaction.id)}
+                        disabled={deletingId === transaction.id}
+                        style={styles.deleteButton}
+                      >
+                        {deletingId === transaction.id ? (
+                          <ActivityIndicator size="small" color={colors.danger} />
+                        ) : (
+                          <IconSymbol
+                            android_material_icon_name="delete"
+                            size={18}
+                            color={colors.danger}
+                          />
+                        )}
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              );
-            })
+                );
+              })}
+            </View>
           )}
         </View>
 
@@ -460,6 +457,11 @@ export default function HomeScreen() {
                 ]}
                 onPress={() => setSelectedType('income')}
               >
+                <IconSymbol 
+                  android_material_icon_name="trending-up" 
+                  size={18} 
+                  color={selectedType === 'income' ? '#FFF' : colors.text} 
+                />
                 <Text style={[
                   styles.typeButtonText,
                   { color: colors.text },
@@ -476,6 +478,11 @@ export default function HomeScreen() {
                 ]}
                 onPress={() => setSelectedType('saving')}
               >
+                <IconSymbol 
+                  android_material_icon_name="savings" 
+                  size={18} 
+                  color={selectedType === 'saving' ? '#FFF' : colors.text} 
+                />
                 <Text style={[
                   styles.typeButtonText,
                   { color: colors.text },
@@ -492,6 +499,11 @@ export default function HomeScreen() {
                 ]}
                 onPress={() => setSelectedType('investment')}
               >
+                <IconSymbol 
+                  android_material_icon_name="show-chart" 
+                  size={18} 
+                  color={selectedType === 'investment' ? '#FFF' : colors.text} 
+                />
                 <Text style={[
                   styles.typeButtonText,
                   { color: colors.text },
@@ -502,34 +514,44 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
 
-            <TextInput
-              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
-              placeholder="Amount"
-              placeholderTextColor={colors.textSecondary}
-              value={amount}
-              onChangeText={setAmount}
-              keyboardType="decimal-pad"
-            />
+            <View style={styles.inputGroup}>
+              <Text style={[styles.inputLabel, { color: colors.text }]}>Amount *</Text>
+              <TextInput
+                style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
+                placeholder="0.00"
+                placeholderTextColor={colors.textSecondary}
+                value={amount}
+                onChangeText={setAmount}
+                keyboardType="decimal-pad"
+              />
+            </View>
 
-            <TextInput
-              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
-              placeholder="Category (e.g., Salary, Rent)"
-              placeholderTextColor={colors.textSecondary}
-              value={category}
-              onChangeText={setCategory}
-            />
+            <View style={styles.inputGroup}>
+              <Text style={[styles.inputLabel, { color: colors.text }]}>Category *</Text>
+              <TextInput
+                style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
+                placeholder="e.g., Salary, Rent, Groceries"
+                placeholderTextColor={colors.textSecondary}
+                value={category}
+                onChangeText={setCategory}
+              />
+            </View>
 
-            <TextInput
-              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
-              placeholder="Description (optional)"
-              placeholderTextColor={colors.textSecondary}
-              value={description}
-              onChangeText={setDescription}
-              multiline
-            />
+            <View style={styles.inputGroup}>
+              <Text style={[styles.inputLabel, { color: colors.text }]}>Description (Optional)</Text>
+              <TextInput
+                style={[styles.input, styles.textArea, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
+                placeholder="Add notes about this transaction"
+                placeholderTextColor={colors.textSecondary}
+                value={description}
+                onChangeText={setDescription}
+                multiline
+                numberOfLines={3}
+              />
+            </View>
 
             <TouchableOpacity
-              style={[styles.addButton, { opacity: addingTransaction ? 0.7 : 1 }]}
+              style={[styles.submitButton, { opacity: addingTransaction ? 0.7 : 1 }]}
               onPress={handleAddTransaction}
               disabled={addingTransaction}
             >
@@ -537,12 +559,12 @@ export default function HomeScreen() {
                 colors={[colors.gradientStart, colors.gradientEnd]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                style={styles.addButtonGradient}
+                style={styles.submitButtonGradient}
               >
                 {addingTransaction ? (
                   <ActivityIndicator color="#FFF" />
                 ) : (
-                  <Text style={styles.addButtonText}>Add Transaction</Text>
+                  <Text style={styles.submitButtonText}>Add Transaction</Text>
                 )}
               </LinearGradient>
             </TouchableOpacity>
@@ -613,220 +635,196 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'android' ? 20 : 0,
-    paddingBottom: 20,
+    paddingBottom: 24,
+  },
+  headerLeft: {
+    flex: 1,
   },
   greeting: {
     fontSize: 14,
     fontWeight: '500',
+    marginBottom: 4,
   },
   userName: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: 'bold',
-    marginTop: 4,
   },
   advisorButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderRadius: 16,
+    overflow: 'hidden',
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 4,
   },
+  advisorButtonGradient: {
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   content: {
     flex: 1,
+  },
+  overviewSection: {
     paddingHorizontal: 20,
+    marginBottom: 28,
+  },
+  overviewTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 16,
   },
   balanceCard: {
     borderRadius: 24,
-    padding: 24,
-    marginBottom: 20,
+    padding: 28,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.25,
     shadowRadius: 16,
-    elevation: 6,
+    elevation: 8,
   },
-  balanceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  balanceContent: {
     alignItems: 'center',
-    marginBottom: 12,
   },
   balanceLabel: {
     fontSize: 14,
     color: '#FFF',
     opacity: 0.9,
-    fontWeight: '500',
-  },
-  downloadButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    fontWeight: '600',
+    marginBottom: 8,
   },
   balanceAmount: {
-    fontSize: 42,
+    fontSize: 48,
     fontWeight: 'bold',
     color: '#FFF',
-    marginBottom: 16,
+    marginBottom: 4,
   },
-  balanceRow: {
-    flexDirection: 'row',
-    gap: 20,
-  },
-  balanceItem: {
-    flex: 1,
-  },
-  balanceItemLabel: {
+  balanceSubtext: {
     fontSize: 13,
     color: '#FFF',
     opacity: 0.85,
-    fontWeight: '500',
   },
-  balanceItemValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFF',
-    marginTop: 4,
+  summarySection: {
+    paddingHorizontal: 20,
+    marginBottom: 28,
   },
-  statsRow: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 16,
+  },
+  summaryGrid: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 24,
   },
-  statCard: {
+  summaryCard: {
     flex: 1,
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 2,
   },
-  statIcon: {
+  summaryCardHeader: {
+    marginBottom: 12,
+  },
+  summaryIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  statLabel: {
-    fontSize: 11,
-    marginBottom: 6,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  statChange: {
+  summaryLabel: {
     fontSize: 12,
     fontWeight: '600',
   },
-  section: {
+  summaryValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  transactionsSection: {
+    paddingHorizontal: 20,
     marginBottom: 24,
   },
-  sectionHeader: {
+  transactionsSectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  viewAnalytics: {
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  budgetChart: {
-    borderRadius: 20,
-    padding: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 20,
-    shadowColor: '#000',
+  addButton: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  budgetCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 8,
-    borderColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  budgetAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  budgetLegend: {
-    flex: 1,
-    gap: 8,
-  },
-  legendItem: {
+  addButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 6,
   },
-  legendDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+  addButtonText: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: '700',
   },
-  legendText: {
-    fontSize: 13,
-    flex: 1,
-  },
-  legendValue: {
-    fontSize: 13,
-    fontWeight: '600',
+  transactionsList: {
+    gap: 10,
   },
   emptyState: {
-    borderRadius: 16,
-    padding: 40,
+    borderRadius: 20,
+    padding: 48,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  emptyIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   emptyText: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 16,
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    marginTop: 8,
     textAlign: 'center',
+    lineHeight: 20,
   },
   transactionCard: {
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
+    padding: 14,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
+    shadowRadius: 6,
     elevation: 2,
   },
   transactionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -836,23 +834,36 @@ const styles = StyleSheet.create({
   },
   transactionCategory: {
     fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  transactionMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 2,
+  },
+  transactionType: {
+    fontSize: 12,
     fontWeight: '600',
   },
-  transactionDescription: {
-    fontSize: 13,
-    marginTop: 2,
+  transactionMetaSeparator: {
+    fontSize: 12,
   },
   transactionDate: {
     fontSize: 12,
-    marginTop: 4,
   },
-  transactionAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  transactionDescription: {
+    fontSize: 12,
+    marginTop: 2,
   },
   transactionRight: {
     alignItems: 'flex-end',
     gap: 6,
+  },
+  transactionAmount: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   deleteButton: {
     padding: 4,
@@ -863,8 +874,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     padding: 24,
     paddingBottom: Platform.OS === 'ios' ? 40 : 24,
   },
@@ -872,7 +883,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 28,
   },
   modalTitle: {
     fontSize: 24,
@@ -880,36 +891,50 @@ const styles = StyleSheet.create({
   },
   typeSelector: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 20,
+    gap: 10,
+    marginBottom: 24,
   },
   typeButton: {
     flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 14,
+    borderRadius: 14,
   },
   typeButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  inputLabel: {
     fontSize: 14,
     fontWeight: '600',
+    marginBottom: 8,
   },
   input: {
-    borderWidth: 1,
-    borderRadius: 12,
+    borderWidth: 1.5,
+    borderRadius: 14,
     padding: 16,
     fontSize: 16,
-    marginBottom: 16,
   },
-  addButton: {
-    borderRadius: 12,
+  textArea: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  submitButton: {
+    borderRadius: 14,
     overflow: 'hidden',
     marginTop: 8,
   },
-  addButtonGradient: {
-    padding: 16,
+  submitButtonGradient: {
+    padding: 18,
     alignItems: 'center',
   },
-  addButtonText: {
+  submitButtonText: {
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
@@ -922,8 +947,8 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   feedbackContent: {
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: 24,
+    padding: 28,
     width: '100%',
     maxWidth: 360,
   },
