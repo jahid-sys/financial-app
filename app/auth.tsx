@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   View,
@@ -13,6 +14,8 @@ import {
 } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
+import { colors } from "@/styles/commonStyles";
+import { LinearGradient } from 'expo-linear-gradient';
 
 type Mode = "signin" | "signup";
 
@@ -51,7 +54,7 @@ export default function AuthScreen() {
   if (authLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -115,6 +118,7 @@ export default function AuthScreen() {
             <TextInput
               style={styles.input}
               placeholder="Name (optional)"
+              placeholderTextColor={colors.textSecondary}
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
@@ -124,6 +128,7 @@ export default function AuthScreen() {
           <TextInput
             style={styles.input}
             placeholder="Email"
+            placeholderTextColor={colors.textSecondary}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -134,6 +139,7 @@ export default function AuthScreen() {
           <TextInput
             style={styles.input}
             placeholder="Password"
+            placeholderTextColor={colors.textSecondary}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -141,17 +147,24 @@ export default function AuthScreen() {
           />
 
           <TouchableOpacity
-            style={[styles.primaryButton, loading && styles.buttonDisabled]}
+            style={[loading && styles.buttonDisabled]}
             onPress={handleEmailAuth}
             disabled={loading}
           >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.primaryButtonText}>
-                {mode === "signin" ? "Sign In" : "Sign Up"}
-              </Text>
-            )}
+            <LinearGradient
+              colors={[colors.gradientStart, colors.gradientEnd]}
+              style={styles.primaryButton}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              {loading ? (
+                <ActivityIndicator color={colors.text} />
+              ) : (
+                <Text style={styles.primaryButtonText}>
+                  {mode === "signin" ? "Sign In" : "Sign Up"}
+                </Text>
+              )}
+            </LinearGradient>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -205,7 +218,7 @@ export default function AuthScreen() {
             <Text style={styles.modalTitle}>{alertModal.title}</Text>
             <Text style={styles.modalMessage}>{alertModal.message}</Text>
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: alertModal.type === 'success' ? '#34C759' : '#007AFF' }]}
+              style={[styles.modalButton, { backgroundColor: alertModal.type === 'success' ? colors.success : colors.primary }]}
               onPress={hideAlert}
             >
               <Text style={styles.modalButtonText}>OK</Text>
@@ -220,13 +233,13 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -241,28 +254,28 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 32,
     textAlign: "center",
-    color: "#000",
+    color: colors.text,
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 16,
     marginBottom: 16,
     fontSize: 16,
-    backgroundColor: "#fff",
+    backgroundColor: colors.card,
+    color: colors.text,
   },
   primaryButton: {
     height: 50,
-    backgroundColor: "#007AFF",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 8,
   },
   primaryButtonText: {
-    color: "#fff",
+    color: colors.text,
     fontSize: 16,
     fontWeight: "600",
   },
@@ -274,7 +287,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   switchModeText: {
-    color: "#007AFF",
+    color: colors.text,
     fontSize: 14,
   },
   divider: {
@@ -285,59 +298,61 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#ddd",
+    backgroundColor: colors.border,
   },
   dividerText: {
     marginHorizontal: 12,
-    color: "#666",
+    color: colors.textSecondary,
     fontSize: 14,
   },
   socialButton: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.border,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
-    backgroundColor: "#fff",
+    backgroundColor: colors.card,
   },
   socialButtonText: {
     fontSize: 16,
-    color: "#000",
+    color: colors.text,
     fontWeight: "500",
   },
   appleButton: {
-    backgroundColor: "#000",
-    borderColor: "#000",
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   appleButtonText: {
-    color: "#fff",
+    color: colors.text,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.8)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     borderRadius: 16,
     padding: 24,
     width: '100%',
     maxWidth: 360,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#000',
+    color: colors.text,
     marginBottom: 12,
     textAlign: 'center',
   },
   modalMessage: {
     fontSize: 16,
-    color: '#555',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 24,
@@ -348,7 +363,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalButtonText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
   },

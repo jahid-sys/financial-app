@@ -1,35 +1,33 @@
 
 import { StyleSheet } from 'react-native';
 
-// Financial App Color Palette - Pink/Purple Gradient Theme (from design reference)
+// Financial App Color Palette - Black Glassy Dark Theme
 export const colors = {
-  // Light theme - Pink/Purple Gradient Design
-  background: '#F5E6F0', // Soft pink background
-  card: '#FFFFFF',
-  text: '#2D1B3D', // Deep purple text
-  textSecondary: '#8B7A99', // Muted purple
-  primary: '#D4A5D8', // Soft purple/pink
-  secondary: '#B88BB8', // Medium purple
-  accent: '#9B6B9E', // Deep purple accent
-  highlight: '#E8B4E8', // Light pink highlight
-  danger: '#E85D75', // Soft red
-  border: '#E8D4E8',
-  success: '#A8D5BA', // Soft green for positive values
+  // Dark theme - Black Glassy Design
+  background: '#000000', // Pure black background
+  card: 'rgba(25, 25, 40, 0.7)', // Dark, slightly transparent for glassy effect
+  text: '#E0E0E0', // Light grey text
+  textSecondary: '#A0A0A0', // Medium grey for secondary text
+  primary: '#1A1A2E', // Dark blue/purple for accents
+  secondary: '#16213E', // Even darker blue/purple
+  accent: '#2A2A4E', // Subtle accent
+  highlight: '#3A3A5E', // Lighter highlight
+  danger: '#F44336', // Red for errors/danger
+  border: '#333344', // Subtle dark border
+  success: '#4CAF50', // Green for positive values
   
-  // Gradient colors for cards
-  gradientStart: '#D4A5D8',
-  gradientEnd: '#B88BB8',
+  // Gradient colors for glassy cards
+  gradientStart: '#1A1A2E',
+  gradientEnd: '#0F0F1A',
   
-  // Dark theme
-  darkBackground: '#1A0F24',
-  darkCard: '#2D1B3D',
-  darkText: '#F5E6F0',
-  darkTextSecondary: '#B8A8C8',
-  darkBorder: '#3D2B4D',
-
   // Legacy aliases (kept for backward compatibility)
-  backgroundAlt: '#2D1B3D',
-  grey: '#B8A8C8',
+  backgroundAlt: '#1A1A2E',
+  grey: '#A0A0A0',
+  
+  // Additional glassy colors
+  glassBackground: 'rgba(25, 25, 40, 0.6)',
+  glassBorder: 'rgba(255, 255, 255, 0.1)',
+  glassHighlight: 'rgba(255, 255, 255, 0.05)',
 };
 
 export const buttonStyles = StyleSheet.create({
@@ -71,11 +69,13 @@ export const commonStyles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#9B6B9E',
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   title: {
     fontSize: 24,
